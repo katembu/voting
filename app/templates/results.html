@@ -1,0 +1,97 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="container">
+   <div class="row">
+      <div class="panel panel-primary">
+         <div class="panel-heading">
+            <h4 class="panel-title">Election Results: {{ info.election.name|safe }} ({{info.election.voting_starts_at_date}} - {{ info.election.voting_ends_at_date}})</h4>
+         </div>
+         <ul class="nav nav-tabs">
+             <li class="active">
+                <a href="#DelegatesView" data-toggle="tab" data-original-title="" title="" aria-expanded="true">Votes per Candidates</a>
+             </li>
+
+            {% if info.election.post_id==1  %}
+            <li class=""><a href="#pchart" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Pie Chart</a> </li>
+            <!--<li class=""><a href="bchart" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Bar Chart By County</a> </li>
+            --> {% elif info.election.post_id==2 or info.election.post_id==3 or info.election.post_id==4 %}
+            <li class=""><a href="#pchart" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Pie Chart</a> </li>
+            <!--<li class=""><a href="bchart" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Bar Chart By Constituency</a> </li>
+            --> {% elif info.election.post_id==5 %}
+            <li class=""><a href="#pchart" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Pie Chart</a> </li>
+            <!--<li class=""><a href="bchart" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Bar Chart By Ward</a> </li>
+            --> {% elif info.election.post_id==6 %}
+            <li class=""><a href="#Home" data-toggle="tab" data-original-title="" title="" aria-expanded="false">Chart</a> </li>
+            {% endif %}
+         </ul>
+         <div class="tab-content">
+            <div id="DelegatesView" class="tab-pane active">
+               <div class="well well-sm">
+                  <div class="pull-right">
+                     <strong>Record Count: </strong> {{ result|length}}
+                  </div>
+               </div>
+               <div class="table-responsive">
+                   {% if result|length > 0 %}
+                  <table class="table table-bordered table-hover">
+                     <thead>
+                        <tr>
+                           <th>Name</th>
+                           <th>Votes</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                         {% for item in result %}
+                        <tr>
+                           <td> {{ item.name }}</td>
+                           <td> {{ item.votecount}}</td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+                  </table>
+                  {% else %}
+                   <div class="alert alert-danger">
+                       <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                       <span class="sr-only">Error:</span> No Delegates Record
+                   </div>
+                  {% endif %}
+               </div>
+
+            </div>
+            <div id="pchart" class="tab-pane">
+                <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+                <script type="text/javascript">
+                  google.load("visualization", "1", {packages:["corechart"]});
+                  google.setOnLoadCallback(drawChart);
+                  function drawChart() {
+
+                    var data = google.visualization.arrayToDataTable([
+                      ['Candindate', 'Total Votes'],
+                      {% for item in result %}
+                        ['{{ item.name }}'.toUpperCase(), {{ item.votecount}}],
+                      {% endfor %}
+                    ]);
+
+                    var options = {
+                      title: 'Election Results: {{ info.election.name|safe }}'
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('mychart'));
+
+                    chart.draw(data, options);
+                  }
+                </script>
+                <div class="panel-body">
+                    <div id="mychart" style="width: 900px; height: 500px;"></div>
+                </div>
+            </div>
+            <div id="bchart" class="tab-pane">
+            </div>
+        </div>
+      </div>
+   </div>
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "appbuilder/general/model/add.html" %}
+{% block add_form %}
+    {{ super() }}
+{% endblock %}
+
+{% block tail_js %}
+    <script src="{{url_for('static',filename='js/test.js')}}"></script>
+    {{ super() }}
+{% endblock %}
